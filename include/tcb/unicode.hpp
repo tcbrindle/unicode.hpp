@@ -558,6 +558,95 @@ using iter_value_t = typename std::iterator_traits<Iter>::value_type;
 
 } // end namespace detail
 
+template <typename InputIt, typename Sentinel>
+class bytes_view {
+public:
+    struct iterator {
+        // Required typedefs
+        using byte = unsigned char;
+        using input_type = detail::iter_value_t<InputIt>;
+        using value_type = byte;
+        using difference_type = typename std::iterator_traits<InputIt>::difference_type; // ?
+        using pointer = const value_type*;
+        using reference = const value_type&;
+        using iterator_category = // ForwardIterator, unless input is only InputIterator
+        std::conditional_t<std::is_same<typename std::iterator_traits<InputIt>::iterator_category,
+                std::input_iterator_tag>::value,
+                std::input_iterator_tag,
+                std::forward_iterator_tag>;
+
+        constexpr iterator() = default;
+
+        constexpr iterator(InputIt first, Sentinel last)
+                : first_(first)
+        {
+            if (first != last) {
+                fill_buffer();
+            }
+        }
+
+        constexpr reference operator*() const
+        {
+            return buf_[idx_];
+        }
+
+        constexpr pointer operator->() const
+        {
+            return &buf_[idx_];
+        }
+
+        constexpr iterator& operator++()
+        {
+            if (++idx_ == sizeof(input_type)) {
+                fill_buffer();
+            }
+        }
+
+        TCB_CONSTEXPR14 iterator operator++(int)
+        {
+            iterator t = *this;
+            this->operator++();
+            return t;
+        }
+
+        constexpr bool operator==(const iterator& other)
+        {
+            return first_ == other.first_ &&
+                   idx_ == other.idx_;
+        }
+
+    private:
+        TCB_CONSTEXPR14 void fill_buffer()
+        {
+            const input_type t = *first_;
+            std::copy(reinterpret_cast<const byte*>(&t),
+                      reinterpret_cast<const byte*>(&t) + sizeof(input_type),
+                      buf_.begin());
+            idx_ = sizeof(input_type);
+        }
+
+        InputIt first_;
+        std::array<byte, sizeof(input_type)> buf_{{}};
+        std::int8_t idx_ = 0;
+    };
+
+    constexpr bytes_view() = default;
+
+    constexpr bytes_view(InputIt first, Sentinel last)
+            : first_(first),
+              last_(last)
+    {}
+
+    constexpr iterator begin() const { return iterator{first_}; }
+    constexpr iterator cbegin() const { return begin(); }
+    constexpr iterator end() const { return iterator{last_}; }
+    constexpr iterator cend() const { return end(); }
+
+private:
+    InputIt first_{};
+    Sentinel last_{};
+};
+
 template <typename InputIt, typename Sentinel,
           typename InCharT = detail::iter_value_t<InputIt>>
 using utf8_view = detail::unicode_view<InputIt, Sentinel, InCharT, char>;
@@ -612,6 +701,20 @@ constexpr
 auto as_utf32(const String& str)
 {
     return as_utf32(std::cbegin(str), std::cend(str));
+}
+
+template <typename InputIt, typename Sentinel>
+constexpr bytes_view<InputIt, Sentinel>
+as_bytes(InputIt first, Sentinel last)
+{
+    return {first, last};
+}
+
+template <typename String>
+constexpr
+auto as_bytes(const String& str)
+{
+    return as_bytes(std::cbegin(str), std::cend(str));
 }
 
 // Conversion functions
