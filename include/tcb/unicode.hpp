@@ -61,10 +61,9 @@ public:
 
     constexpr int size() const noexcept { return size_; }
 
-    constexpr CharType operator[](int i) const noexcept { return chars_[i]; }
+    constexpr const CharType& operator[](int i) const noexcept { return chars_[i]; }
 
-    friend constexpr bool operator==(const encoded_chars& lhs,
-                                     const encoded_chars& rhs)
+    friend constexpr bool operator==(const encoded_chars& lhs, const encoded_chars& rhs)
     {
         return std::equal(std::begin(lhs.chars_),
                           std::begin(lhs.chars_) + lhs.size_,
@@ -442,8 +441,8 @@ private:
         // Required typedefs
         using value_type = OutCharT;
         using difference_type = typename std::iterator_traits<InputIt>::difference_type; // ?
-        using pointer = value_type*;
-        using reference = value_type&;
+        using pointer = const value_type*;
+        using reference = const value_type&;
         using iterator_category = // ForwardIterator, unless input is only InputIterator
             std::conditional_t<std::is_same<typename std::iterator_traits<InputIt>::iterator_category,
                                             std::input_iterator_tag>::value,
@@ -461,9 +460,14 @@ private:
             }
         }
 
-        constexpr value_type operator*() const
+        constexpr reference operator*() const
         {
             return next_chars_[idx_];
+        }
+
+        constexpr pointer operator->() const
+        {
+            return &next_chars_[idx_];
         }
 
         TCB_CONSTEXPR14 iterator& operator++()
@@ -497,6 +501,10 @@ private:
             return !(*this == other);
         }
 
+
+
+    private:
+
         constexpr bool done() const
         {
             return first_ == last_ && idx_ == next_chars_.size();
@@ -525,8 +533,8 @@ public:
     constexpr iterator cend() const { return end(); }
 
 private:
-    InputIt first_;
-    Sentinel last_;
+    InputIt first_{};
+    Sentinel last_{};
 };
 
 template <typename Iter>

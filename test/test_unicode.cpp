@@ -8,8 +8,7 @@
 
 using namespace tcb::unicode;
 
-//#define TEST_STRING "$€0123456789你好abcdefghijklmnopqrstuvwxyz\U0001F60E"
-#define TEST_STRING "ab"
+#define TEST_STRING "$€0123456789你好abcdefghijklmnopqrstuvwxyz\U0001F60E"
 
 
 const std::string u8 = u8"" TEST_STRING;
@@ -98,6 +97,13 @@ TEST_CASE("Input iterators can be converted")
         REQUIRE(to_u32string(iter32{s32}, iter32{}) == u32);
         REQUIRE(to_u32string(iterw{sw}, iterw{}) == u32);
     }
+}
+
+TEST_CASE("Default constructed views are empty")
+{
+    decltype(as_utf8(u8)) v{};
+
+    REQUIRE(v.cbegin() == v.cend());
 }
 
 TEST_CASE("Test conversion functions")
