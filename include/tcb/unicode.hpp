@@ -627,7 +627,7 @@ to_utf_string(InputIt first, Sentinel last)
     // Try to minimise the number of reallocations
     if /*constexpr*/ (std::is_same<typename std::iterator_traits<InputIt>::iterator_category,
                                    std::random_access_iterator_tag>::value) {
-        output.reserve(std::distance(first, last));
+        output.reserve(static_cast<typename string_type::size_type>(std::distance(first, last)));
     }
 
     convert<OutCharT>(first, last, std::back_inserter(output));
