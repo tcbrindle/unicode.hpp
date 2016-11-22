@@ -684,8 +684,7 @@ std::u32string to_u32string(InputIt first, Sentinel last)
 template <typename String>
 std::u32string to_u32string(const String& str)
 {
-    const auto v = as_utf32(str);
-    return std::u32string(std::cbegin(v), std::cend(v));
+    return to_u32string(std::cbegin(str), std::cend(str));
 }
 
 } // end namespace unicode
