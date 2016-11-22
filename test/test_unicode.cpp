@@ -123,3 +123,35 @@ TEST_CASE("Test conversion functions")
     REQUIRE(to_u32string(u32) == u32);
     REQUIRE(to_u32string(w) == u32);
 }
+
+TEST_CASE("Container conversion") {
+
+    std::vector<int> a = as_utf8(u8);
+    std::vector<int> b = as_utf16(u8);
+    std::vector<int> c = as_utf32(u8);
+    REQUIRE(equal(a, u8));
+    REQUIRE(equal(b, u16));
+    REQUIRE(equal(c, u32));
+
+    a = as_utf8(u16);
+    b = as_utf16(u16);
+    c = as_utf32(u16);
+    REQUIRE(equal(a, u8));
+    REQUIRE(equal(b, u16));
+    REQUIRE(equal(c, u32));
+
+    a = as_utf8(u32);
+    b = as_utf16(u32);
+    c = as_utf32(u32);
+    REQUIRE(equal(a, u8));
+    REQUIRE(equal(b, u16));
+    REQUIRE(equal(c, u32));
+
+
+    a = as_utf8(w);
+    b = as_utf16(w);
+    c = as_utf32(w);
+    REQUIRE(equal(a, u8));
+    REQUIRE(equal(b, u16));
+    REQUIRE(equal(c, u32));
+}
