@@ -63,7 +63,7 @@ public:
 
     constexpr const CharType& operator[](int i) const noexcept { return chars_[i]; }
 
-    friend constexpr bool operator==(const encoded_chars& lhs, const encoded_chars& rhs)
+    friend bool operator==(const encoded_chars& lhs, const encoded_chars& rhs)
     {
         return std::equal(std::begin(lhs.chars_),
                           std::begin(lhs.chars_) + lhs.size_,
@@ -115,7 +115,7 @@ struct utf_traits<CharType, 1> {
         }
     }
 
-    static constexpr bool is_trail(char_type ci)
+    static TCB_CONSTEXPR14 bool is_trail(char_type ci)
     {
         unsigned char c = ci;
         return (c & 0xC0) == 0x80;
