@@ -724,7 +724,7 @@ template <typename OutCharT,
           typename OutIter,
           typename InCharT = detail::iter_value_t<InIter>>
 TCB_CONSTEXPR14
-OutIter convert(InIter first, Sentinel last, OutIter out)
+OutIter utf_convert(InIter first, Sentinel last, OutIter out)
 {
     while (first != last) {
         const char32_t c = detail::utf_traits<InCharT>::decode(first, last);
@@ -749,7 +749,7 @@ to_utf_string(InputIt first, Sentinel last)
         output.reserve(static_cast<typename string_type::size_type>(std::distance(first, last)));
     }
 
-    convert<OutCharT>(first, last, std::back_inserter(output));
+    utf_convert<OutCharT>(first, last, std::back_inserter(output));
 
     return output;
 }
