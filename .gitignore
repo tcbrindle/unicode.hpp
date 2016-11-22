@@ -30,3 +30,6 @@
 
 # Visual Studio CMake stuff
 *.vs
+
+# CLion rubbish
+.idea/
