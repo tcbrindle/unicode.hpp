@@ -18,6 +18,15 @@ namespace unicode {
 
 namespace detail {
 
+template <typename C, typename InputIt, typename Sentinel>
+using is_compatible_container =
+    std::conditional_t<std::is_constructible<C, InputIt, Sentinel>::value,
+                       std::true_type,
+                       std::false_type>;
+
+template <typename C, typename InputIt, typename Sentinel>
+constexpr bool is_compatible_container_v = is_compatible_container<C, InputIt, Sentinel>::value;
+
 #ifdef __GNUC__
 #   define TCB_LIKELY(x)   __builtin_expect((x),1)
 #   define TCB_UNLIKELY(x) __builtin_expect((x),0)
@@ -531,6 +540,13 @@ public:
 	constexpr iterator end() const { return iterator{last_, last_}; }
 
     constexpr iterator cend() const { return end(); }
+
+    template <typename Container,
+              typename = std::enable_if_t<is_compatible_container_v<Container, InputIt, Sentinel>>>
+    constexpr operator Container() const
+    {
+        return Container(begin(), end());
+    }
 
 private:
     InputIt first_{};
