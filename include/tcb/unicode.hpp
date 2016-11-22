@@ -487,7 +487,7 @@ private:
             return temp;
         }
 
-        constexpr bool operator==(const iterator& other) const
+        bool operator==(const iterator& other) const
         {
             return (done() && other.done()) ||
                     (first_ == other.first_ &&
@@ -496,7 +496,7 @@ private:
                     next_chars_ == other.next_chars_);
         }
 
-        constexpr bool operator!=(const iterator& other) const
+        bool operator!=(const iterator& other) const
         {
             return !(*this == other);
         }
@@ -505,7 +505,7 @@ private:
 
     private:
 
-        constexpr bool done() const
+        bool done() const
         {
             return first_ == last_ && idx_ == next_chars_.size();
         }
