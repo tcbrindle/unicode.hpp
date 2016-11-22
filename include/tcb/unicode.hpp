@@ -528,7 +528,7 @@ public:
 
     constexpr iterator cbegin() const { return begin(); }
 
-    constexpr iterator end() const { return iterator{}; }
+	constexpr iterator end() const { return iterator{last_, last_}; }
 
     constexpr iterator cend() const { return end(); }
 
