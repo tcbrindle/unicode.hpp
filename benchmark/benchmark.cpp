@@ -27,8 +27,6 @@ struct timer {
     using clock = std::chrono::high_resolution_clock;
     using time_point = typename clock::time_point;
 
-    timer() = default;
-
     template <typename T = std::chrono::milliseconds>
     T elapsed() const
     {
@@ -40,11 +38,11 @@ private:
 };
 
 template <typename Func, typename Arg>
-void time_function_call(Func f, Arg&& arg, int n, string label)
+void time_function_call(Func f, const Arg& arg, int n, const string& label)
 {
     timer t;
     for (int i = 0; i < n; i++) {
-        volatile auto res = f(std::forward<Arg>(arg));
+        volatile auto res = f(arg);
     }
     auto e = t.elapsed();
     std::cout << label << " took " << e.count() << "ms\n";
